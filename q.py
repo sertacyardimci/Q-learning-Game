@@ -1,4 +1,5 @@
 import pygame
+import random
 
 
 class Area:
@@ -24,27 +25,53 @@ class Player:
         self.score = score
         self.matrixPosX = 0
         self.matrixPosY = 0
+        self.pos = 0
         self.areaDistance = 110
+
+    def move(self, direction):
+        if direction == 0:
+            return self.moveLeft()
+
+        if direction == 1:
+            return self.moveRight()
+
+        if direction == 2:
+            return self.moveUp()
+
+        if direction == 3:
+            return self.moveDown()
 
     def moveLeft(self):
         if self.matrixPosX > 0:
             self.posX -= self.areaDistance
             self.matrixPosX -= 1
+            self.pos -= 1
+            return True
+        return False
 
     def moveRight(self):
         if self.matrixPosX < Area.matrixSize - 1:
             self.posX += self.areaDistance
             self.matrixPosX += 1
+            self.pos += 1
+            return True
+        return False
 
     def moveUp(self):
         if self.matrixPosY > 0:
             self.posY -= self.areaDistance
             self.matrixPosY -= 1
+            self.pos -= 4
+            return True
+        return False
 
     def moveDown(self):
         if self.matrixPosY < Area.matrixSize - 1:
             self.posY += self.areaDistance
             self.matrixPosY += 1
+            self.pos += 4
+            return True
+        return False
 
     def increaseScore(self, value):
         self.score = self.score + value
@@ -80,6 +107,7 @@ for i in range(Area.matrixSize ** 2):
     for j in range(4):
         Q[i].append(0)
 Q[0][3] = 10
+
 
 def qFunction(pos, direction):
     directionList = []
@@ -135,6 +163,10 @@ def qFunction(pos, direction):
     v = Q[pos][direction] + 0.3 * (areaList[int(newPos / Area.matrixSize)]
                                    [newPos % Area.matrixSize].reward + 0.8 * max(maxQ) - Q[pos][direction])
     Q[pos][direction] = v
+    print("*********************************")
+    for q in Q:
+        print(q)
+
 
 pygame.init()
 screen = pygame.display.set_mode((screenWidth, screenHeight))
@@ -153,22 +185,22 @@ while not done:
             is_blue = not is_blue
 
     pressed = pygame.key.get_pressed()
+
     if pressed[pygame.K_UP]:
-        player.posY -= 110
+        qFunction(player.pos, 2)
+        player.moveUp()
+
     if pressed[pygame.K_DOWN]:
+        qFunction(player.pos, 3)
         player.moveDown()
-        qFunction(0, 3)
-        for q in Q:
-            for k in q:
-                print(k)
+
     if pressed[pygame.K_LEFT]:
-        player.posX -= 110
+        qFunction(player.pos, 0)
+        player.moveLeft()
+
     if pressed[pygame.K_RIGHT]:
+        qFunction(player.pos, 1)
         player.moveRight()
-        qFunction(0, 1)
-        for q in Q:
-            for k in q:
-                print(k)
 
     screen.fill((0, 0, 0))
 
@@ -182,5 +214,11 @@ while not done:
 
     # AI
 
+    if player.pos != 10:
+        rndDirection = random.randint(0, 3)
+        lastPos = player.pos
+        if player.move(rndDirection):
+            qFunction(lastPos, rndDirection)
+
     pygame.display.flip()
-    clock.tick(1)
+    clock.tick(10)
