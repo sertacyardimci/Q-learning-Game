@@ -22,11 +22,12 @@ class Area:
 
 class Player:
 
-    def __init__(self, posX, posY, image, score):
+    def __init__(self, posX, posY, image, areaList):
         self.posX = posX
         self.posY = posY
         self.image = image
-        self.score = score
+        self.areaList = areaList
+
         self.matrixPosX = 0
         self.matrixPosY = 0
         self.pos = 0
@@ -77,8 +78,12 @@ class Player:
             return True
         return False
 
-    def increaseScore(self, value):
-        self.score = self.score + value
+    def spawnRandPos(self):
+        self.matrixPosX = random.randint(0, 3)
+        self.matrixPosY = random.randint(0, 3)
+        self.posX = areaList[self.matrixPosY][self.matrixPosX].posX
+        self.posY = areaList[self.matrixPosY][self.matrixPosX].posY
+        self.pos = self.matrixPosY * 4 + self.matrixPosX
 
 
 screenWidth = 1000
@@ -88,6 +93,8 @@ colorWhite = (255, 255, 255)
 rectWidth = 100
 rectHeight = 100
 rectSpace = 10
+trainMaxIter = 100
+trainIter = 0
 
 pygame.init()
 screen = pygame.display.set_mode((screenWidth, screenHeight))
@@ -101,9 +108,10 @@ clock = pygame.time.Clock()
 #   Images
 playerImage = pygame.image.load('player.png')
 bombImage = pygame.image.load('bomb.png')
+finishImage = pygame.image.load('finish.png')
 
 #   Font
-font = pygame.font.SysFont("comicsansms",20,1)
+font = pygame.font.SysFont("comicsansms", 20, 1)
 
 
 areaList = list()
@@ -116,11 +124,20 @@ for i in range(0, Area.matrixSize):
                     rectSpace * i, rectWidth, rectHeight)
         areaList[i].append(area)
 
-areaList[1][0].reward = 20
+#   Add game images and rewards
+
 areaList[0][1].image = bombImage
+areaList[0][1].reward = -100
+areaList[2][1].image = bombImage
+areaList[2][1].reward = -100
+areaList[3][3].image = bombImage
+areaList[3][3].reward = -100
+areaList[2][3].image = finishImage
+areaList[2][3].reward = 100
 
 
-player = Player(areaList[0][0].posX, areaList[0][0].posY, playerImage, 100)
+player = Player(areaList[0][0].posX, areaList[0]
+                [0].posY, playerImage, areaList)
 
 
 #   Q Table
@@ -129,7 +146,7 @@ for i in range(Area.matrixSize ** 2):
     Q.append([])
     for j in range(4):
         Q[i].append(float(0))
-Q[0][3] = 10
+
 
 
 def qFunction(pos, direction):
@@ -213,7 +230,7 @@ while not done:
         qFunction(player.pos, 1)
         player.moveRight()
 
-    screen.fill((0, 0, 0))
+    screen.fill((20, 20, 20))
 
 #   Fill matrix color to screen
     for i in range(Area.matrixSize):
@@ -249,13 +266,21 @@ while not done:
 #   Display player to screen
     screen.blit(player.image, (player.posX, player.posY))
 
-#   AI
+    text = font.render("Iterasyon: " + str(trainIter), True, (80, 80, 80))
+    screen.blit(text,
+                (0, 0))
 
-    if player.pos != 10:
-        rndDirection = random.randint(0, 3)
-        lastPos = player.pos
-        if player.move(rndDirection):
-            qFunction(lastPos, rndDirection)
+#   AI
+    if trainIter < trainMaxIter:
+        if areaList[player.matrixPosY][player.matrixPosX].reward != -100 and areaList[player.matrixPosY][player.matrixPosX].reward != 100:
+            rndDirection = random.randint(0, 3)
+            lastPos = player.pos
+            if player.move(rndDirection):
+                qFunction(lastPos, rndDirection)
+        else:
+            trainIter += 1
+            if trainIter < trainMaxIter:
+                player.spawnRandPos()
 
     pygame.display.flip()
-    clock.tick(10)
+    clock.tick(60)
