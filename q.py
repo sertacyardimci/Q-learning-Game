@@ -93,8 +93,11 @@ colorWhite = (255, 255, 255)
 rectWidth = 100
 rectHeight = 100
 rectSpace = 10
+
 trainMaxIter = 100
 trainIter = 0
+isTrainStop = False
+isAIrunable = False
 
 pygame.init()
 screen = pygame.display.set_mode((screenWidth, screenHeight))
@@ -146,7 +149,6 @@ for i in range(Area.matrixSize ** 2):
     Q.append([])
     for j in range(4):
         Q[i].append(float(0))
-
 
 
 def qFunction(pos, direction):
@@ -215,8 +217,7 @@ while not done:
     pressed = pygame.key.get_pressed()
 
     if pressed[pygame.K_UP]:
-        qFunction(player.pos, 2)
-        player.moveUp()
+        isAIrunable = True
 
     if pressed[pygame.K_DOWN]:
         qFunction(player.pos, 3)
@@ -266,7 +267,7 @@ while not done:
 #   Display player to screen
     screen.blit(player.image, (player.posX, player.posY))
 
-    text = font.render("Iterasyon: " + str(trainIter), True, (80, 80, 80))
+    text = font.render("Iterasyon: " + str(trainIter), True, (200, 200, 200))
     screen.blit(text,
                 (0, 0))
 
@@ -278,9 +279,22 @@ while not done:
             if player.move(rndDirection):
                 qFunction(lastPos, rndDirection)
         else:
-            trainIter += 1
+            player.spawnRandPos()
             if trainIter < trainMaxIter:
-                player.spawnRandPos()
+                trainIter += 1
+            else:
+                isTrainStop = True
+
+    if isTrainStop == True:
+        player.spawnRandPos()
+        isTrainStop = False
+
+    if isAIrunable == True:
+        d = Q[player.pos].index(max(Q[player.pos]))
+        if player.move(d):
+            print(d)
+        if areaList[player.matrixPosY][player.matrixPosX].reward == 100:
+            isAIrunable = False
 
     pygame.display.flip()
     clock.tick(60)
