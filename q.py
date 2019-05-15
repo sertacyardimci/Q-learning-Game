@@ -94,7 +94,7 @@ rectWidth = 100
 rectHeight = 100
 rectSpace = 10
 
-trainMaxIter = 100
+trainMaxIter = 1000
 trainIter = 0
 isTrainStop = False
 isAIrunable = False
@@ -172,23 +172,25 @@ if useSystemTrainData == True:
     f = open("systemtrain4.txt", "r")
     lines = f.readlines()
     f.close()
-    
+
     for i in range(Area.matrixSize ** 2):
-        for j in range (4):
-            Q[i][j] = float (lines[i * 4 +j])
+        for j in range(4):
+            Q[i][j] = float(lines[i * 4 + j])
 
 
 #   Fill Q table from user train data
-if useSystemTrainData == True:
+if useUserTrainData == True:
     f = open("usertrain4.txt", "r")
     lines = f.readlines()
     f.close()
-    
+
     for i in range(Area.matrixSize ** 2):
-        for j in range (4):
-            Q[i][j] = float (lines[i * 4 +j])
+        for j in range(4):
+            Q[i][j] = float(lines[i * 4 + j])
 
 #   Q reward function
+
+
 def qFunction(pos, direction):
     directionList = []
     if direction == 0:
@@ -254,22 +256,13 @@ while not done:
 
     pressed = pygame.key.get_pressed()
 
-    if pressed[pygame.K_UP]:
+    if pressed[pygame.K_SPACE]:
         if isAIrunable == False:
-            player.spawnRandPos()
-            isAIrunable = True
-
-    if pressed[pygame.K_DOWN]:
-        qFunction(player.pos, 3)
-        player.moveDown()
-
-    if pressed[pygame.K_LEFT]:
-        qFunction(player.pos, 0)
-        player.moveLeft()
-
-    if pressed[pygame.K_RIGHT]:
-        qFunction(player.pos, 1)
-        player.moveRight()
+            while(True):
+                player.spawnRandPos()
+                if areaList[player.matrixPosY][player.matrixPosX].reward != -100 and areaList[player.matrixPosY][player.matrixPosX].reward != 100:
+                    isAIrunable = True
+                    break
 
     screen.fill((20, 20, 20))
 
@@ -320,9 +313,10 @@ while not done:
                 if player.move(rndDirection):
                     qFunction(lastPos, rndDirection)
             else:
-                player.spawnRandPos()
                 if trainIter < trainMaxIter:
-                    trainIter += 1
+                    if areaList[player.matrixPosY][player.matrixPosX].reward == 100:
+                        trainIter += 1
+                player.spawnRandPos()
 
                 if trainIter >= trainMaxIter:
                     isTrainStop = True
@@ -332,7 +326,7 @@ while not done:
                         for row in Q:
                             for column in row:
                                 f.write(str(column) + "\n")
-                        
+
                         f.close()
 
     if isAIrunable == True:
@@ -342,4 +336,4 @@ while not done:
             isAIrunable = False
 
     pygame.display.flip()
-    clock.tick(2)
+    clock.tick(150)
