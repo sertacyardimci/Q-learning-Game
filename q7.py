@@ -346,4 +346,4 @@ while not done:
             isAIrunable = False
 
     pygame.display.flip()
-    clock.tick(5)
+    clock.tick(150)
