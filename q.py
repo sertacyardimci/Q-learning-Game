@@ -94,7 +94,7 @@ rectWidth = 100
 rectHeight = 100
 rectSpace = 10
 
-trainMaxIter = 1000
+trainMaxIter = 150
 trainIter = 0
 isTrainStop = False
 isAIrunable = False
@@ -145,8 +145,22 @@ for i in range(0, Area.matrixSize):
 
 #   Add game images and rewards
 
-areaList[0][1].image = bombImage
-areaList[0][1].reward = -100
+areaList[1][0].image = bombImage
+areaList[1][0].reward = -100
+areaList[1][1].image = bombImage
+areaList[1][1].reward = -100
+
+areaList[1][2].image = bombImage
+areaList[1][2].reward = -100
+
+areaList[1][3].image = bombImage
+areaList[1][3].reward = -100
+
+
+
+areaList[0][2].image = bombImage
+areaList[0][2].reward = -100
+
 areaList[2][1].image = bombImage
 areaList[2][1].reward = -100
 areaList[3][3].image = bombImage
@@ -336,4 +350,4 @@ while not done:
             isAIrunable = False
 
     pygame.display.flip()
-    clock.tick(150)
+    clock.tick(5)
