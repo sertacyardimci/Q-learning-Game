@@ -94,7 +94,7 @@ rectWidth = 100
 rectHeight = 100
 rectSpace = 10
 
-trainMaxIter = 150
+trainMaxIter = 100
 trainIter = 0
 isTrainStop = False
 isAIrunable = False
@@ -125,13 +125,13 @@ y = 30
 clock = pygame.time.Clock()
 
 #   Images
-playerImage = pygame.image.load('player.png')
-bombImage = pygame.image.load('bomb.png')
-finishImage = pygame.image.load('finish.png')
+playerImage = pygame.image.load('assets4\\player.png')
+bombImage = pygame.image.load('assets4\\bomb.png')
+finishImage = pygame.image.load('assets4\\finish.png')
 
 #   Font
 font = pygame.font.SysFont("comicsansms", 20, 1)
-
+fontQ = pygame.font.SysFont("comicsansms", 30, 1)
 
 areaList = list()
 
@@ -139,14 +139,13 @@ areaList = list()
 for i in range(0, Area.matrixSize):
     areaList.append(list())
     for j in range(0, Area.matrixSize):
-        area = Area(185 + 100 * j + rectSpace * j, 85 + 100 * i +
+        area = Area(100 + 100 * j + rectSpace * j, 85 + 100 * i +
                     rectSpace * i, rectWidth, rectHeight)
         areaList[i].append(area)
 
 #   Add game images and rewards
 
-areaList[1][0].image = bombImage
-areaList[1][0].reward = -100
+
 areaList[1][1].image = bombImage
 areaList[1][1].reward = -100
 
@@ -194,7 +193,7 @@ if useSystemTrainData == True:
 
 #   Fill Q table from user train data
 if useUserTrainData == True:
-    f = open("usertrain4.txt", "r")
+    f = open("assets4\\usertrain4.txt", "r")
     lines = f.readlines()
     f.close()
 
@@ -314,9 +313,13 @@ while not done:
 #   Display player to screen
     screen.blit(player.image, (player.posX, player.posY))
 
-    text = font.render("Iterasyon: " + str(trainIter), True, (200, 200, 200))
+    text = font.render("Iteration: " + str(trainIter), True, (200, 200, 200))
     screen.blit(text,
                 (0, 0))
+    textQ = fontQ.render("Q ", True, (200, 200, 200))
+    screen.blit(textQ,
+                    (600, 280))
+    
 
 #   AI
     if useNewTrain == True:
@@ -336,7 +339,7 @@ while not done:
                     isTrainStop = True
                     #   Fill system train data from Q
                     if useNewTrain == True:
-                        f = open("usertrain4.txt", "w")
+                        f = open("assets4\\usertrain4.txt", "w")
                         for row in Q:
                             for column in row:
                                 f.write(str(column) + "\n")
