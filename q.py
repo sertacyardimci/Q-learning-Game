@@ -316,7 +316,7 @@ while not done:
     text = font.render("Iteration: " + str(trainIter), True, (200, 200, 200))
     screen.blit(text,
                 (0, 0))
-    textQ = fontQ.render("Q ", True, (200, 200, 200))
+    textQ = fontQ.render("Q= ", True, (200, 200, 200))
     screen.blit(textQ,
                     (600, 280))
     
