@@ -1,6 +1,9 @@
 # Q-learning-Game
 Q-learning is a values-based learning algorithm in reinforcement learning.
 
+* **Source** [freecodecamp.org](https://www.freecodecamp.org/news/an-introduction-to-q-learning-reinforcement-learning-14ac0b4493cc/)
+* **Warning** Q table design on this site has been made incorrectly. The right design was used in the game.
+
 ## Q-Learning — a simplistic overview (Game)
 Let’s say that a robot has to cross a maze and reach the end point. There are mines, and the robot can only move one tile at a time. If the robot steps onto a mine, the robot is dead. The robot has to reach the end point in the shortest time possible.
 <p align="center">
@@ -14,6 +17,11 @@ Let’s say that a robot has to cross a maze and reach the end point. There are 
 
 ## Installation
 * `pip install pygame`
+
+## Q Table Design
+<p align="center">
+  <img src="https://github.com/sertacyardimci/Q-learning-Game/blob/master/readme/example_Q.jpg" title="Q Table">
+</p>
 
 ## AI train
 * `python q.py`
